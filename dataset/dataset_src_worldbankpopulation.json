@@ -1,5 +1,5 @@
 {
-	"name": "dataset_src_worldbank",
+	"name": "dataset_src_worldbankpopulation",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "crimestatstacalinkedservice",
