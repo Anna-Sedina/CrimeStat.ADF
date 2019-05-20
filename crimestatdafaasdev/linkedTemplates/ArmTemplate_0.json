@@ -231,6 +231,7 @@
 						"container": "crimestat-sourcefiles"
 					},
 					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -995,7 +996,8 @@
 								}
 							},
 							"sink": {
-								"type": "AzureSqlSink"
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE [staging].[WorldBankPopulation_untyped]"
 							},
 							"enableStaging": false,
 							"translator": {
