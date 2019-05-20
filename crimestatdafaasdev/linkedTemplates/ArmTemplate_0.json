@@ -213,6 +213,588 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataset_src_worldbank')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatstacalinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "WorldBankPopulation.csv",
+						"folderPath": "CrimeStat.Source.WorldBank",
+						"container": "crimestat-sourcefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Country Name",
+						"type": "String"
+					},
+					{
+						"name": "Country Code",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Name",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Code",
+						"type": "String"
+					},
+					{
+						"name": "1960",
+						"type": "String"
+					},
+					{
+						"name": "1961",
+						"type": "String"
+					},
+					{
+						"name": "1962",
+						"type": "String"
+					},
+					{
+						"name": "1963",
+						"type": "String"
+					},
+					{
+						"name": "1964",
+						"type": "String"
+					},
+					{
+						"name": "1965",
+						"type": "String"
+					},
+					{
+						"name": "1966",
+						"type": "String"
+					},
+					{
+						"name": "1967",
+						"type": "String"
+					},
+					{
+						"name": "1968",
+						"type": "String"
+					},
+					{
+						"name": "1969",
+						"type": "String"
+					},
+					{
+						"name": "1970",
+						"type": "String"
+					},
+					{
+						"name": "1971",
+						"type": "String"
+					},
+					{
+						"name": "1972",
+						"type": "String"
+					},
+					{
+						"name": "1973",
+						"type": "String"
+					},
+					{
+						"name": "1974",
+						"type": "String"
+					},
+					{
+						"name": "1975",
+						"type": "String"
+					},
+					{
+						"name": "1976",
+						"type": "String"
+					},
+					{
+						"name": "1977",
+						"type": "String"
+					},
+					{
+						"name": "1978",
+						"type": "String"
+					},
+					{
+						"name": "1979",
+						"type": "String"
+					},
+					{
+						"name": "1980",
+						"type": "String"
+					},
+					{
+						"name": "1981",
+						"type": "String"
+					},
+					{
+						"name": "1982",
+						"type": "String"
+					},
+					{
+						"name": "1983",
+						"type": "String"
+					},
+					{
+						"name": "1984",
+						"type": "String"
+					},
+					{
+						"name": "1985",
+						"type": "String"
+					},
+					{
+						"name": "1986",
+						"type": "String"
+					},
+					{
+						"name": "1987",
+						"type": "String"
+					},
+					{
+						"name": "1988",
+						"type": "String"
+					},
+					{
+						"name": "1989",
+						"type": "String"
+					},
+					{
+						"name": "1990",
+						"type": "String"
+					},
+					{
+						"name": "1991",
+						"type": "String"
+					},
+					{
+						"name": "1992",
+						"type": "String"
+					},
+					{
+						"name": "1993",
+						"type": "String"
+					},
+					{
+						"name": "1994",
+						"type": "String"
+					},
+					{
+						"name": "1995",
+						"type": "String"
+					},
+					{
+						"name": "1996",
+						"type": "String"
+					},
+					{
+						"name": "1997",
+						"type": "String"
+					},
+					{
+						"name": "1998",
+						"type": "String"
+					},
+					{
+						"name": "1999",
+						"type": "String"
+					},
+					{
+						"name": "2000",
+						"type": "String"
+					},
+					{
+						"name": "2001",
+						"type": "String"
+					},
+					{
+						"name": "2002",
+						"type": "String"
+					},
+					{
+						"name": "2003",
+						"type": "String"
+					},
+					{
+						"name": "2004",
+						"type": "String"
+					},
+					{
+						"name": "2005",
+						"type": "String"
+					},
+					{
+						"name": "2006",
+						"type": "String"
+					},
+					{
+						"name": "2007",
+						"type": "String"
+					},
+					{
+						"name": "2008",
+						"type": "String"
+					},
+					{
+						"name": "2009",
+						"type": "String"
+					},
+					{
+						"name": "2010",
+						"type": "String"
+					},
+					{
+						"name": "2011",
+						"type": "String"
+					},
+					{
+						"name": "2012",
+						"type": "String"
+					},
+					{
+						"name": "2013",
+						"type": "String"
+					},
+					{
+						"name": "2014",
+						"type": "String"
+					},
+					{
+						"name": "2015",
+						"type": "String"
+					},
+					{
+						"name": "2016",
+						"type": "String"
+					},
+					{
+						"name": "2017",
+						"type": "String"
+					},
+					{
+						"name": "2018",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_WorldBankPopulation_untyped')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatdwhlinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Country Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country Code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Indicator Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Indicator Code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1960",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1961",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1962",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1963",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1964",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1965",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1966",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1967",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1968",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1969",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1970",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1971",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1972",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1973",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1974",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1975",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1976",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1977",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1978",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1979",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1980",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1981",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1982",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1983",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1984",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1985",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1986",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1987",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1988",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1989",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1990",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1991",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1992",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1993",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1994",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1995",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1996",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1997",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1998",
+						"type": "nvarchar"
+					},
+					{
+						"name": "1999",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2000",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2001",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2002",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2003",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2004",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2005",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2006",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2007",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2008",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2009",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2010",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2011",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2012",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2013",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2014",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2015",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2016",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2017",
+						"type": "nvarchar"
+					},
+					{
+						"name": "2018",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[staging].[WorldBankPopulation_untyped]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Source-Country-Load-Staging')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -382,6 +964,697 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/dataset_src_country')]",
 				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_Country_untyped')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Source-WorlBank-Load-Staging')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy-worldbank-staging",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSetting"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSetting"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Country Name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Country Name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Country Code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Country Code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Indicator Name",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Indicator Name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Indicator Code",
+											"type": "String"
+										},
+										"sink": {
+											"name": "Indicator Code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1960",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1960",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1961",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1961",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1962",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1962",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1963",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1963",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1964",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1964",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1965",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1965",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1966",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1966",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1967",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1967",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1968",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1968",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1969",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1969",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1970",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1970",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1971",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1971",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1972",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1972",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1973",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1973",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1974",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1974",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1975",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1975",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1976",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1976",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1977",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1977",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1978",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1978",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1979",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1979",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1980",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1980",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1981",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1981",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1982",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1982",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1983",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1983",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1984",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1984",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1985",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1985",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1986",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1986",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1987",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1987",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1988",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1988",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1989",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1989",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1990",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1990",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1991",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1991",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1992",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1992",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1993",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1993",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1994",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1994",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1995",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1995",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1996",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1996",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1997",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1997",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1998",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1998",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "1999",
+											"type": "String"
+										},
+										"sink": {
+											"name": "1999",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2000",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2000",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2001",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2001",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2002",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2002",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2003",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2003",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2004",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2004",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2005",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2005",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2006",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2006",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2007",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2007",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2008",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2008",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2009",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2009",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2010",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2010",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2011",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2011",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2012",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2012",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2013",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2013",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2014",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2014",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2015",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2015",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2016",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2016",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2017",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2017",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "2018",
+											"type": "String"
+										},
+										"sink": {
+											"name": "2018",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dataset_src_worldbank",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dataset_dst_staging_WorldBankPopulation_untyped",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dataset_src_worldbank')]",
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_WorldBankPopulation_untyped')]"
 			]
 		},
 		{
