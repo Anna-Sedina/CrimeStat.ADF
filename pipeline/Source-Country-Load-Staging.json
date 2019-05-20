@@ -1,9 +1,9 @@
 {
-	"name": "pipeline1",
+	"name": "Source-Country-Load-Staging",
 	"properties": {
 		"activities": [
 			{
-				"name": "Source-Country-Load-Staging",
+				"name": "copy-country-staging",
 				"type": "Copy",
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -145,13 +145,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SourceDataset",
+						"referenceName": "dataset_src_country",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DestinationDataset",
+						"referenceName": "dataset_dst_staging_Country_untyped",
 						"type": "DatasetReference"
 					}
 				]
