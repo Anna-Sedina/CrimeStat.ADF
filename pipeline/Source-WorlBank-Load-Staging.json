@@ -1,0 +1,45 @@
+{
+	"name": "Source-WorlBank-Load-Staging",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy-worldbank-staging",
+				"type": "Copy",
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSetting"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSetting"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dataset_src_worldbank",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dataset_dst_staging_WorldBankPopulation_untyped",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		]
+	}
+}
