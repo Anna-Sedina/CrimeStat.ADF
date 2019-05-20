@@ -12,6 +12,25 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Execute_Source-WorldBank-Load-Staging",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute_Source-Country-Load-Staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Source-WorlBank-Load-Staging",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		]
 	}
