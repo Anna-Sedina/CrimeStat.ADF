@@ -665,7 +665,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "dataset_src_worldbank",
+						"referenceName": "dataset_src_worldbankpopulation",
 						"type": "DatasetReference"
 					}
 				],
