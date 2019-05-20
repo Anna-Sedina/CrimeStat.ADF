@@ -23,7 +23,8 @@
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink"
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE [staging].[WorldBankPopulation_untyped]"
 					},
 					"enableStaging": false,
 					"translator": {
