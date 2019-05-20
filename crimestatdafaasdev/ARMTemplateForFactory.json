@@ -403,12 +403,34 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "Execute_Source-WorldBank-Load-Staging",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute_Source-Country-Load-Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source-WorlBank-Load-Staging",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Source-Country-Load-Staging')]"
+				"[concat(variables('factoryId'), '/pipelines/Source-Country-Load-Staging')]",
+				"[concat(variables('factoryId'), '/pipelines/Source-WorlBank-Load-Staging')]"
 			]
 		},
 		{
