@@ -1,0 +1,47 @@
+{
+	"name": "dataset_src_uncrime",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "crimestatstacalinkedservice",
+			"type": "LinkedServiceReference"
+		},
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "CrimeStat.Source.UnCrime/ConvertedToCSV",
+				"container": "crimestat-sourcefiles"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Region",
+				"type": "String"
+			},
+			{
+				"name": "SubRegion",
+				"type": "String"
+			},
+			{
+				"name": "Country",
+				"type": "String"
+			},
+			{
+				"name": "Count",
+				"type": "String"
+			},
+			{
+				"name": "Rate",
+				"type": "String"
+			},
+			{
+				"name": "Year",
+				"type": "String"
+			}
+		]
+	}
+}
