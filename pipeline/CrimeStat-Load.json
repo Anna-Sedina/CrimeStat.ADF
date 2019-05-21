@@ -31,6 +31,25 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "Execute_Source-UnCrime-Load-Staging",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute_Source-WorldBank-Load-Staging",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Source-UnCrime-Load-Staging",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
 			}
 		]
 	}
