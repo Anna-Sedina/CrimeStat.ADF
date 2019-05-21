@@ -23,7 +23,7 @@
 				"type": "String"
 			},
 			{
-				"name": "SubRegion",
+				"name": "Sub Region",
 				"type": "String"
 			},
 			{
