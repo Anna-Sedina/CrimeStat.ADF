@@ -9,8 +9,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "burglary_.csv",
-				"folderPath": "CrimeStat.Source.UnCrime",
+				"folderPath": "CrimeStat.Source.UnCrime/ConvertedToCSV",
 				"container": "crimestat-sourcefiles"
 			},
 			"columnDelimiter": ",",
