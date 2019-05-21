@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "dataflow1",
+				"name": "DF-UnCrime-Load-Staging",
 				"type": "ExecuteDataFlow",
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -14,7 +14,7 @@
 				},
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "DF-UnCrime-Load-Staging",
 						"type": "DataFlowReference"
 					}
 				}
