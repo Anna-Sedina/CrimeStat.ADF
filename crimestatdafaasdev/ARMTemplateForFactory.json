@@ -21,30 +21,75 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/crimestatdwhlinkedservice')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/CrimeStat-Load')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('crimestatdwhlinkedservice_connectionString')]"
-				}
+				"activities": [
+					{
+						"name": "Execute_Source-Country-Load-Staging",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source-Country-Load-Staging",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute_Source-WorldBank-Load-Staging",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute_Source-Country-Load-Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source-WorlBank-Load-Staging",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute_Source-UnCrime-Load-Staging",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute_Source-WorldBank-Load-Staging",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Source-UnCrime-Load-Staging",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"annotations": []
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/crimestatstacalinkedservice')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('crimestatstacalinkedservice_connectionString')]"
-				}
-			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Source-Country-Load-Staging')]",
+				"[concat(variables('factoryId'), '/pipelines/Source-WorlBank-Load-Staging')]",
+				"[concat(variables('factoryId'), '/pipelines/Source-UnCrime-Load-Staging')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Source-Country-Load-Staging')]",
@@ -219,218 +264,41 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataset_src_country')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "crimestatstacalinkedservice",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "ISOcountries.csv",
-						"folderPath": "CrimeStat.Source.Countries",
-						"container": "crimestat-sourcefiles"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "alpha-2",
-						"type": "String"
-					},
-					{
-						"name": "alpha-3",
-						"type": "String"
-					},
-					{
-						"name": "country-code",
-						"type": "String"
-					},
-					{
-						"name": "iso_3166-2",
-						"type": "String"
-					},
-					{
-						"name": "region",
-						"type": "String"
-					},
-					{
-						"name": "sub-region",
-						"type": "String"
-					},
-					{
-						"name": "intermediate-region",
-						"type": "String"
-					},
-					{
-						"name": "region-code",
-						"type": "String"
-					},
-					{
-						"name": "sub-region-code",
-						"type": "String"
-					},
-					{
-						"name": "intermediate-region-code",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_Country_untyped')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "crimestatdwhlinkedservice",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "name",
-						"type": "nvarchar"
-					},
-					{
-						"name": "alpha-2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "alpha-3",
-						"type": "nvarchar"
-					},
-					{
-						"name": "country-code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "iso_3166-2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "region",
-						"type": "nvarchar"
-					},
-					{
-						"name": "sub-region",
-						"type": "nvarchar"
-					},
-					{
-						"name": "intermediate-region",
-						"type": "nvarchar"
-					},
-					{
-						"name": "region-code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "sub-region-code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "intermediate-region-code",
-						"type": "nvarchar"
-					},
-					{
-						"name": "sysETLrunId",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "sysCreatedAt",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "sysChangedAt",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "sysCreatedBy",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "sysChangedBy",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"tableName": "[[staging].[Country_untyped]"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CrimeStat-Load')]",
+			"name": "[concat(parameters('factoryName'), '/Source-UnCrime-Load-Staging')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Execute_Source-Country-Load-Staging",
-						"type": "ExecutePipeline",
+						"name": "DF-UnCrime-Load-Staging",
+						"type": "ExecuteDataFlow",
 						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Source-Country-Load-Staging",
-								"type": "PipelineReference"
+							"dataflow": {
+								"referenceName": "DF-UnCrime-Load-Staging",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SrcUnCrime": {},
+									"DstUNCrimeUntyped": {}
+								}
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "Execute_Source-WorldBank-Load-Staging",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "Execute_Source-Country-Load-Staging",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "Source-WorlBank-Load-Staging",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"staging": {}
 						}
 					}
 				],
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Source-Country-Load-Staging')]",
-				"[concat(variables('factoryId'), '/pipelines/Source-WorlBank-Load-Staging')]"
+				"[concat(variables('factoryId'), '/dataflows/DF-UnCrime-Load-Staging')]"
 			]
 		},
 		{
@@ -1126,286 +994,171 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataset_src_worldbankpopulation')]",
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_Country_untyped')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "crimestatstacalinkedservice",
+					"referenceName": "crimestatdwhlinkedservice",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "WorldBankPopulation.csv",
-						"folderPath": "CrimeStat.Source.WorldBank",
-						"container": "crimestat-sourcefiles"
-					},
-					"columnDelimiter": ",",
-					"rowDelimiter": "\n",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
+				"type": "AzureSqlTable",
 				"schema": [
 					{
-						"name": "Country Name",
-						"type": "String"
+						"name": "name",
+						"type": "nvarchar"
 					},
 					{
-						"name": "Country Code",
-						"type": "String"
+						"name": "alpha-2",
+						"type": "nvarchar"
 					},
 					{
-						"name": "Indicator Name",
-						"type": "String"
+						"name": "alpha-3",
+						"type": "nvarchar"
 					},
 					{
-						"name": "Indicator Code",
-						"type": "String"
+						"name": "country-code",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1960",
-						"type": "String"
+						"name": "iso_3166-2",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1961",
-						"type": "String"
+						"name": "region",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1962",
-						"type": "String"
+						"name": "sub-region",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1963",
-						"type": "String"
+						"name": "intermediate-region",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1964",
-						"type": "String"
+						"name": "region-code",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1965",
-						"type": "String"
+						"name": "sub-region-code",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1966",
-						"type": "String"
+						"name": "intermediate-region-code",
+						"type": "nvarchar"
 					},
 					{
-						"name": "1967",
-						"type": "String"
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "1968",
-						"type": "String"
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					},
 					{
-						"name": "1969",
-						"type": "String"
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
 					},
 					{
-						"name": "1970",
-						"type": "String"
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "1971",
-						"type": "String"
-					},
-					{
-						"name": "1972",
-						"type": "String"
-					},
-					{
-						"name": "1973",
-						"type": "String"
-					},
-					{
-						"name": "1974",
-						"type": "String"
-					},
-					{
-						"name": "1975",
-						"type": "String"
-					},
-					{
-						"name": "1976",
-						"type": "String"
-					},
-					{
-						"name": "1977",
-						"type": "String"
-					},
-					{
-						"name": "1978",
-						"type": "String"
-					},
-					{
-						"name": "1979",
-						"type": "String"
-					},
-					{
-						"name": "1980",
-						"type": "String"
-					},
-					{
-						"name": "1981",
-						"type": "String"
-					},
-					{
-						"name": "1982",
-						"type": "String"
-					},
-					{
-						"name": "1983",
-						"type": "String"
-					},
-					{
-						"name": "1984",
-						"type": "String"
-					},
-					{
-						"name": "1985",
-						"type": "String"
-					},
-					{
-						"name": "1986",
-						"type": "String"
-					},
-					{
-						"name": "1987",
-						"type": "String"
-					},
-					{
-						"name": "1988",
-						"type": "String"
-					},
-					{
-						"name": "1989",
-						"type": "String"
-					},
-					{
-						"name": "1990",
-						"type": "String"
-					},
-					{
-						"name": "1991",
-						"type": "String"
-					},
-					{
-						"name": "1992",
-						"type": "String"
-					},
-					{
-						"name": "1993",
-						"type": "String"
-					},
-					{
-						"name": "1994",
-						"type": "String"
-					},
-					{
-						"name": "1995",
-						"type": "String"
-					},
-					{
-						"name": "1996",
-						"type": "String"
-					},
-					{
-						"name": "1997",
-						"type": "String"
-					},
-					{
-						"name": "1998",
-						"type": "String"
-					},
-					{
-						"name": "1999",
-						"type": "String"
-					},
-					{
-						"name": "2000",
-						"type": "String"
-					},
-					{
-						"name": "2001",
-						"type": "String"
-					},
-					{
-						"name": "2002",
-						"type": "String"
-					},
-					{
-						"name": "2003",
-						"type": "String"
-					},
-					{
-						"name": "2004",
-						"type": "String"
-					},
-					{
-						"name": "2005",
-						"type": "String"
-					},
-					{
-						"name": "2006",
-						"type": "String"
-					},
-					{
-						"name": "2007",
-						"type": "String"
-					},
-					{
-						"name": "2008",
-						"type": "String"
-					},
-					{
-						"name": "2009",
-						"type": "String"
-					},
-					{
-						"name": "2010",
-						"type": "String"
-					},
-					{
-						"name": "2011",
-						"type": "String"
-					},
-					{
-						"name": "2012",
-						"type": "String"
-					},
-					{
-						"name": "2013",
-						"type": "String"
-					},
-					{
-						"name": "2014",
-						"type": "String"
-					},
-					{
-						"name": "2015",
-						"type": "String"
-					},
-					{
-						"name": "2016",
-						"type": "String"
-					},
-					{
-						"name": "2017",
-						"type": "String"
-					},
-					{
-						"name": "2018",
-						"type": "String"
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
 					}
-				]
+				],
+				"typeProperties": {
+					"tableName": "[[staging].[Country_untyped]"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
+				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_UNCrime_untyped')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatdwhlinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "FileName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SubRegion",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Count",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Rate",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Year",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[staging].[UNCrime_untyped]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
 			]
 		},
 		{
@@ -1709,79 +1462,77 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_UNCrime_untyped')]",
+			"name": "[concat(parameters('factoryName'), '/dataset_src_country')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "crimestatdwhlinkedservice",
+					"referenceName": "crimestatstacalinkedservice",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "ISOcountries.csv",
+						"folderPath": "CrimeStat.Source.Countries",
+						"container": "crimestat-sourcefiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
 				"schema": [
 					{
-						"name": "FileName",
-						"type": "nvarchar"
+						"name": "name",
+						"type": "String"
 					},
 					{
-						"name": "Region",
-						"type": "nvarchar"
+						"name": "alpha-2",
+						"type": "String"
 					},
 					{
-						"name": "SubRegion",
-						"type": "nvarchar"
+						"name": "alpha-3",
+						"type": "String"
 					},
 					{
-						"name": "Country",
-						"type": "nvarchar"
+						"name": "country-code",
+						"type": "String"
 					},
 					{
-						"name": "Count",
-						"type": "nvarchar"
+						"name": "iso_3166-2",
+						"type": "String"
 					},
 					{
-						"name": "Rate",
-						"type": "nvarchar"
+						"name": "region",
+						"type": "String"
 					},
 					{
-						"name": "Year",
-						"type": "nvarchar"
+						"name": "sub-region",
+						"type": "String"
 					},
 					{
-						"name": "sysETLrunId",
-						"type": "int",
-						"precision": 10
+						"name": "intermediate-region",
+						"type": "String"
 					},
 					{
-						"name": "sysCreatedAt",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
+						"name": "region-code",
+						"type": "String"
 					},
 					{
-						"name": "sysChangedAt",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
+						"name": "sub-region-code",
+						"type": "String"
 					},
 					{
-						"name": "sysCreatedBy",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "sysChangedBy",
-						"type": "int",
-						"precision": 10
+						"name": "intermediate-region-code",
+						"type": "String"
 					}
-				],
-				"typeProperties": {
-					"tableName": "[[staging].[UNCrime_untyped]"
-				}
+				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
+				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
 			]
 		},
 		{
@@ -1812,7 +1563,7 @@
 						"type": "String"
 					},
 					{
-						"name": "SubRegion",
+						"name": "Sub Region",
 						"type": "String"
 					},
 					{
@@ -1835,6 +1586,507 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_src_worldbankpopulation')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatstacalinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "WorldBankPopulation.csv",
+						"folderPath": "CrimeStat.Source.WorldBank",
+						"container": "crimestat-sourcefiles"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Country Name",
+						"type": "String"
+					},
+					{
+						"name": "Country Code",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Name",
+						"type": "String"
+					},
+					{
+						"name": "Indicator Code",
+						"type": "String"
+					},
+					{
+						"name": "1960",
+						"type": "String"
+					},
+					{
+						"name": "1961",
+						"type": "String"
+					},
+					{
+						"name": "1962",
+						"type": "String"
+					},
+					{
+						"name": "1963",
+						"type": "String"
+					},
+					{
+						"name": "1964",
+						"type": "String"
+					},
+					{
+						"name": "1965",
+						"type": "String"
+					},
+					{
+						"name": "1966",
+						"type": "String"
+					},
+					{
+						"name": "1967",
+						"type": "String"
+					},
+					{
+						"name": "1968",
+						"type": "String"
+					},
+					{
+						"name": "1969",
+						"type": "String"
+					},
+					{
+						"name": "1970",
+						"type": "String"
+					},
+					{
+						"name": "1971",
+						"type": "String"
+					},
+					{
+						"name": "1972",
+						"type": "String"
+					},
+					{
+						"name": "1973",
+						"type": "String"
+					},
+					{
+						"name": "1974",
+						"type": "String"
+					},
+					{
+						"name": "1975",
+						"type": "String"
+					},
+					{
+						"name": "1976",
+						"type": "String"
+					},
+					{
+						"name": "1977",
+						"type": "String"
+					},
+					{
+						"name": "1978",
+						"type": "String"
+					},
+					{
+						"name": "1979",
+						"type": "String"
+					},
+					{
+						"name": "1980",
+						"type": "String"
+					},
+					{
+						"name": "1981",
+						"type": "String"
+					},
+					{
+						"name": "1982",
+						"type": "String"
+					},
+					{
+						"name": "1983",
+						"type": "String"
+					},
+					{
+						"name": "1984",
+						"type": "String"
+					},
+					{
+						"name": "1985",
+						"type": "String"
+					},
+					{
+						"name": "1986",
+						"type": "String"
+					},
+					{
+						"name": "1987",
+						"type": "String"
+					},
+					{
+						"name": "1988",
+						"type": "String"
+					},
+					{
+						"name": "1989",
+						"type": "String"
+					},
+					{
+						"name": "1990",
+						"type": "String"
+					},
+					{
+						"name": "1991",
+						"type": "String"
+					},
+					{
+						"name": "1992",
+						"type": "String"
+					},
+					{
+						"name": "1993",
+						"type": "String"
+					},
+					{
+						"name": "1994",
+						"type": "String"
+					},
+					{
+						"name": "1995",
+						"type": "String"
+					},
+					{
+						"name": "1996",
+						"type": "String"
+					},
+					{
+						"name": "1997",
+						"type": "String"
+					},
+					{
+						"name": "1998",
+						"type": "String"
+					},
+					{
+						"name": "1999",
+						"type": "String"
+					},
+					{
+						"name": "2000",
+						"type": "String"
+					},
+					{
+						"name": "2001",
+						"type": "String"
+					},
+					{
+						"name": "2002",
+						"type": "String"
+					},
+					{
+						"name": "2003",
+						"type": "String"
+					},
+					{
+						"name": "2004",
+						"type": "String"
+					},
+					{
+						"name": "2005",
+						"type": "String"
+					},
+					{
+						"name": "2006",
+						"type": "String"
+					},
+					{
+						"name": "2007",
+						"type": "String"
+					},
+					{
+						"name": "2008",
+						"type": "String"
+					},
+					{
+						"name": "2009",
+						"type": "String"
+					},
+					{
+						"name": "2010",
+						"type": "String"
+					},
+					{
+						"name": "2011",
+						"type": "String"
+					},
+					{
+						"name": "2012",
+						"type": "String"
+					},
+					{
+						"name": "2013",
+						"type": "String"
+					},
+					{
+						"name": "2014",
+						"type": "String"
+					},
+					{
+						"name": "2015",
+						"type": "String"
+					},
+					{
+						"name": "2016",
+						"type": "String"
+					},
+					{
+						"name": "2017",
+						"type": "String"
+					},
+					{
+						"name": "2018",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/crimestatstacalinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/crimestatdwhlinkedservice')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('crimestatdwhlinkedservice_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/crimestatstacalinkedservice')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('crimestatstacalinkedservice_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF-UnCrime-Load-Staging')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dataset_src_uncrime",
+								"type": "DatasetReference"
+							},
+							"name": "SrcUnCrime",
+							"script": "source(output(\n\t\tRegion as string,\n\t\t{Sub Region} as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'FileName') ~> SrcUnCrime",
+							"typeProperties": {}
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_staging_UNCrime_untyped",
+								"type": "DatasetReference"
+							},
+							"name": "DstUNCrimeUntyped",
+							"script": "SrcUnCrime sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tFileName,\n\t\tRegion,\n\t\tSubRegion = {Sub Region},\n\t\tCountry,\n\t\tCount,\n\t\tRate,\n\t\tYear\n\t),\n\ttruncate:true) ~> DstUNCrimeUntyped"
+						}
+					],
+					"transformations": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dataset_src_uncrime')]",
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_UNCrime_untyped')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow-worldbank-transform')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dataset_src_worldbankpopulation",
+								"type": "DatasetReference"
+							},
+							"name": "pivoteddata",
+							"script": "source(output(\n\t\t{Country Name} as string,\n\t\t{Country Code} as string,\n\t\t{Indicator Name} as string,\n\t\t{Indicator Code} as string,\n\t\t{1960} as string,\n\t\t{1961} as string,\n\t\t{1962} as string,\n\t\t{1963} as string,\n\t\t{1964} as string,\n\t\t{1965} as string,\n\t\t{1966} as string,\n\t\t{1967} as string,\n\t\t{1968} as string,\n\t\t{1969} as string,\n\t\t{1970} as string,\n\t\t{1971} as string,\n\t\t{1972} as string,\n\t\t{1973} as string,\n\t\t{1974} as string,\n\t\t{1975} as string,\n\t\t{1976} as string,\n\t\t{1977} as string,\n\t\t{1978} as string,\n\t\t{1979} as string,\n\t\t{1980} as string,\n\t\t{1981} as string,\n\t\t{1982} as string,\n\t\t{1983} as string,\n\t\t{1984} as string,\n\t\t{1985} as string,\n\t\t{1986} as string,\n\t\t{1987} as string,\n\t\t{1988} as string,\n\t\t{1989} as string,\n\t\t{1990} as string,\n\t\t{1991} as string,\n\t\t{1992} as string,\n\t\t{1993} as string,\n\t\t{1994} as string,\n\t\t{1995} as string,\n\t\t{1996} as string,\n\t\t{1997} as string,\n\t\t{1998} as string,\n\t\t{1999} as string,\n\t\t{2000} as string,\n\t\t{2001} as string,\n\t\t{2002} as string,\n\t\t{2003} as string,\n\t\t{2004} as string,\n\t\t{2005} as string,\n\t\t{2006} as string,\n\t\t{2007} as string,\n\t\t{2008} as string,\n\t\t{2009} as string,\n\t\t{2010} as string,\n\t\t{2011} as string,\n\t\t{2012} as string,\n\t\t{2013} as string,\n\t\t{2014} as string,\n\t\t{2015} as string,\n\t\t{2016} as string,\n\t\t{2017} as string,\n\t\t{2018} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> pivoteddata",
+							"typeProperties": {}
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_staging_WorldBankPopulation_unpivoted",
+								"type": "DatasetReference"
+							},
+							"name": "DSTWorldBankPopulationunpivoted",
+							"script": "DerivedColumn1 sink(input(\n\t\t{Country Name} as string,\n\t\t{Country Code} as string,\n\t\t{Indicator Name} as string,\n\t\t{Indicator Code} as string,\n\t\tYear as string,\n\t\tPopulation as long,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\t{Country Name},\n\t\t{Country Code},\n\t\t{Indicator Name},\n\t\t{Indicator Code},\n\t\tYear,\n\t\tPopulation\n\t)) ~> DSTWorldBankPopulationunpivoted"
+						}
+					],
+					"transformations": [
+						{
+							"name": "unpivoted",
+							"script": "pivoteddata unpivot(output(\n\t\tYear as string,\n\t\tPopulation as string\n\t),\n\tungroupBy({Country Name},\n\t\t{Country Code},\n\t\t{Indicator Name},\n\t\t{Indicator Code}),\n\tlateral: false,\n\tignoreNullPivots: false) ~> unpivoted"
+						},
+						{
+							"name": "DerivedColumn1",
+							"script": "unpivoted derive(Population = toInteger(Population)) ~> DerivedColumn1"
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dataset_src_worldbankpopulation')]",
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_WorldBankPopulation_unpivoted')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_WorldBankPopulation_unpivoted')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatdwhlinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Country Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country Code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Indicator Name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Indicator Code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Year",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Population",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[staging].[WorldBankPopulation_unpivoted]"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/crimestatdwhlinkedservice')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Source-WorldBankPopulation_unpivoted-Load-Staging')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow-worldbank-transform",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow-worldbank-transform",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"pivoteddata": {},
+									"DSTWorldBankPopulationunpivoted": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow-worldbank-transform')]"
 			]
 		}
 	]
