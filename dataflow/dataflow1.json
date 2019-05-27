@@ -1,0 +1,54 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dataset_dst_staging_UNCrime_typed",
+						"type": "DatasetReference"
+					},
+					"name": "source1",
+					"script": "source(output(\n\t\tCrimeTypeName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT DISTINCT [FileName] AS CrimeTypeName\\nFROM [staging].[UNCrime_typed]',\n\tformat: 'query') ~> source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "dataset_dst_dwh_DimCrimeType",
+						"type": "DatasetReference"
+					},
+					"name": "source2",
+					"script": "source(output(\n\t\tDimCrimeTypeKey as integer,\n\t\tCrimeTypeNameDST as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT [DimCrimeTypeKey]\\n      ,[CrimeTypeName] AS CrimeTypeNameDST\\nFROM [dwh].[DimCrimeType]',\n\tformat: 'query') ~> source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dataset_dst_dwh_DimCrimeType",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"script": "Exists1 sink(input(\n\t\tDimCrimeTypeKey as integer,\n\t\tCrimeTypeName as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false) ~> sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedColumn1",
+					"script": "source1 derive(CrimeTypeName = replace(replace(replace(CrimeTypeName, '.csv', ''), '/CrimeStat.Source.UnCrime/ConvertedToCSV/',''),'_',' ')) ~> DerivedColumn1"
+				},
+				{
+					"name": "Sort1",
+					"script": "DerivedColumn1 sort(asc(DerivedColumn1@CrimeTypeName, true)) ~> Sort1"
+				},
+				{
+					"name": "Sort2",
+					"script": "source2 sort(asc(CrimeTypeNameDST, true)) ~> Sort2"
+				},
+				{
+					"name": "Exists1",
+					"script": "Sort1, Sort2 exists(DerivedColumn1@CrimeTypeName == CrimeTypeNameDST,\n\tnegate:true,\n\tbroadcast: 'none')~> Exists1"
+				}
+			]
+		}
+	}
+}
