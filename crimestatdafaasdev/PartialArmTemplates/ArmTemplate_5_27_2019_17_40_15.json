@@ -1,0 +1,302 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory Name",
+			"defaultValue": "crimestatdafaasdev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow-uncrime-transform')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_staging_UNCrime_untyped",
+								"type": "DatasetReference"
+							},
+							"name": "UnCrimeUntyped",
+							"script": "source(output(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT [FileName]\\n      ,[Region]\\n      ,[SubRegion]\\n      ,[Country]\\n      ,REPLACE( [Count], [Count],TRIM(REPLACE(REPLACE([Count],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Count]\\n      ,REPLACE( [Rate], [Rate],TRIM(REPLACE(REPLACE([Rate],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Rate]\\n      ,[Year]\\nFROM [staging].[UNCrime_untyped]',\n\tformat: 'query') ~> UnCrimeUntyped"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_staging_UNCrime_typed",
+								"type": "DatasetReference"
+							},
+							"name": "UNCrimeTyped",
+							"script": "RateToDecimalAndCountToDecimal sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as decimal(20,0),\n\t\tRate as decimal(15,3),\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true) ~> UNCrimeTyped"
+						}
+					],
+					"transformations": [
+						{
+							"name": "RateToDecimalAndCountToDecimal",
+							"script": "UnCrimeUntyped derive(Count = toDecimal(Count,20,0),\n\t\tRate = toDecimal(Rate,15,3)) ~> RateToDecimalAndCountToDecimal"
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_UNCrime_typed')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_staging_UNCrime_typed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatdwhlinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "FileName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Region",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SubRegion",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Count",
+						"type": "decimal",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Rate",
+						"type": "decimal",
+						"precision": 15,
+						"scale": 3
+					},
+					{
+						"name": "Year",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[staging].[UNCrime_typed]"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Source-UnCrime-Typed-Load-Staging')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow-uncrime-transform",
+						"type": "ExecuteDataFlow",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow-uncrime-transform",
+								"type": "DataFlowReference"
+							}
+						}
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow-uncrime-transform')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow-dimcrimetype-load')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_staging_UNCrime_typed",
+								"type": "DatasetReference"
+							},
+							"name": "UnCrimeTyped",
+							"script": "source(output(\n\t\tCrimeTypeName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT DISTINCT [FileName] AS CrimeTypeName\\nFROM [staging].[UNCrime_typed]',\n\tformat: 'query') ~> UnCrimeTyped"
+						},
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_dwh_DimCrimeType",
+								"type": "DatasetReference"
+							},
+							"name": "DimCrimeTypeName",
+							"script": "source(output(\n\t\tDimCrimeTypeKey as integer,\n\t\tCrimeTypeNameDST as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT [DimCrimeTypeKey]\\n      ,[CrimeTypeName] AS CrimeTypeNameDST\\nFROM [dwh].[DimCrimeType]',\n\tformat: 'query') ~> DimCrimeTypeName"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dataset_dst_dwh_DimCrimeType",
+								"type": "DatasetReference"
+							},
+							"name": "DimCrimeTypeNameLoad",
+							"script": "ExistsCrimeTypeNameInDST sink(input(\n\t\tDimCrimeTypeKey as integer,\n\t\tCrimeTypeName as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false) ~> DimCrimeTypeNameLoad"
+						}
+					],
+					"transformations": [
+						{
+							"name": "CrimeTypeName",
+							"script": "UnCrimeTyped derive(CrimeTypeName = replace(replace(replace(CrimeTypeName, '.csv', ''), '/CrimeStat.Source.UnCrime/ConvertedToCSV/',''),'_',' ')) ~> CrimeTypeName"
+						},
+						{
+							"name": "SortSRCCrimeTypeName",
+							"script": "CrimeTypeName sort(asc(CrimeTypeName@CrimeTypeName, true)) ~> SortSRCCrimeTypeName"
+						},
+						{
+							"name": "SortDSTCrimeTypeName",
+							"script": "DimCrimeTypeName sort(asc(CrimeTypeNameDST, true)) ~> SortDSTCrimeTypeName"
+						},
+						{
+							"name": "ExistsCrimeTypeNameInDST",
+							"script": "SortSRCCrimeTypeName, SortDSTCrimeTypeName exists(CrimeTypeName@CrimeTypeName == CrimeTypeNameDST,\n\tnegate:true,\n\tbroadcast: 'none')~> ExistsCrimeTypeNameInDST"
+						}
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_staging_UNCrime_typed')]",
+				"[concat(variables('factoryId'), '/datasets/dataset_dst_dwh_DimCrimeType')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_dst_dwh_DimCrimeType')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "crimestatdwhlinkedservice",
+					"type": "LinkedServiceReference"
+				},
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DimCrimeTypeKey",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CrimeTypeName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sysETLrunId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysCreatedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysChangedAt",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sysCreatedBy",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "sysChangedBy",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"tableName": "[[dwh].[DimCrimeType]"
+				}
+			}
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Source-DimCrimeType-Load-DWH')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dataflow-dimcrimetype-load",
+						"type": "ExecuteDataFlow",
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow-dimcrimetype-load",
+								"type": "DataFlowReference"
+							}
+						}
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow-dimcrimetype-load')]"
+			]
+		}
+	]
+}
