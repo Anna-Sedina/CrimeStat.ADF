@@ -19,8 +19,8 @@
 						"referenceName": "dataset_dst_staging_WorldBankPopulation_unpivoted",
 						"type": "DatasetReference"
 					},
-					"name": "DSTWorldBankPopulationunpivoted",
-					"script": "DerivedColumn1 sink(input(\n\t\t{Country Name} as string,\n\t\t{Country Code} as string,\n\t\t{Indicator Name} as string,\n\t\t{Indicator Code} as string,\n\t\tYear as string,\n\t\tPopulation as long,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\t{Country Name},\n\t\t{Country Code},\n\t\t{Indicator Name},\n\t\t{Indicator Code},\n\t\tYear,\n\t\tPopulation\n\t)) ~> DSTWorldBankPopulationunpivoted"
+					"name": "sink1",
+					"script": "DerivedColumn1 sink(input(\n\t\t{Country Name} as string,\n\t\t{Country Code} as string,\n\t\t{Indicator Name} as string,\n\t\t{Indicator Code} as string,\n\t\tYear as string,\n\t\tPopulation as long,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true) ~> sink1"
 				}
 			],
 			"transformations": [
