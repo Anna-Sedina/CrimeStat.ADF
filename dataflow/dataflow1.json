@@ -9,8 +9,8 @@
 						"referenceName": "dataset_dst_staging_UNCrime_untyped",
 						"type": "DatasetReference"
 					},
-					"name": "source1",
-					"script": "source(output(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT [FileName]\\n      ,[Region]\\n      ,[SubRegion]\\n      ,[Country]\\n      ,REPLACE( [Count], [Count],TRIM(REPLACE(REPLACE([Count],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Count]\\n      ,REPLACE( [Rate], [Rate],TRIM(REPLACE(REPLACE([Rate],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Rate]\\n      ,[Year]\\nFROM [staging].[UNCrime_untyped]',\n\tformat: 'query') ~> source1"
+					"name": "UnCrimeUntyped",
+					"script": "source(output(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tquery: 'SELECT [FileName]\\n      ,[Region]\\n      ,[SubRegion]\\n      ,[Country]\\n      ,REPLACE( [Count], [Count],TRIM(REPLACE(REPLACE([Count],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Count]\\n      ,REPLACE( [Rate], [Rate],TRIM(REPLACE(REPLACE([Rate],\\'-\\',\\'0\\'), \\',\\',\\'\\'))) AS [Rate]\\n      ,[Year]\\nFROM [staging].[UNCrime_untyped]',\n\tformat: 'query') ~> UnCrimeUntyped"
 				}
 			],
 			"sinks": [
@@ -19,14 +19,14 @@
 						"referenceName": "dataset_dst_staging_UNCrime_typed",
 						"type": "DatasetReference"
 					},
-					"name": "sink1",
-					"script": "DerivedColumn1 sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as decimal(20,0),\n\t\tRate as decimal(15,3),\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true) ~> sink1"
+					"name": "UNCrimeTyped",
+					"script": "RateToDecimalAndCountToDecimal sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as decimal(20,0),\n\t\tRate as decimal(15,3),\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true) ~> UNCrimeTyped"
 				}
 			],
 			"transformations": [
 				{
-					"name": "DerivedColumn1",
-					"script": "source1 derive(Count = toDecimal(Count,20,0),\n\t\tRate = toDecimal(Rate,15,3)) ~> DerivedColumn1"
+					"name": "RateToDecimalAndCountToDecimal",
+					"script": "UnCrimeUntyped derive(Count = toDecimal(Count,20,0),\n\t\tRate = toDecimal(Rate,15,3)) ~> RateToDecimalAndCountToDecimal"
 				}
 			]
 		}
