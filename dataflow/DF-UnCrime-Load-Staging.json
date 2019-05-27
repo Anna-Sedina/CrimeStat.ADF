@@ -10,7 +10,7 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcUnCrime",
-					"script": "source(output(\n\t\tRegion as string,\n\t\t{Sub Region} as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> SrcUnCrime"
+					"script": "source(output(\n\t\tRegion as string,\n\t\t{Sub Region} as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'FileName') ~> SrcUnCrime"
 				}
 			],
 			"sinks": [
@@ -19,14 +19,8 @@
 						"referenceName": "dataset_dst_staging_UNCrime_untyped",
 						"type": "DatasetReference"
 					},
-					"name": "DstUncrimeUntyped",
-					"script": "DerivedColumn1 sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tRegion,\n\t\tSubRegion = {Sub Region},\n\t\tCountry,\n\t\tCount,\n\t\tRate,\n\t\tYear\n\t),\n\ttruncate:true) ~> DstUncrimeUntyped"
-				}
-			],
-			"transformations": [
-				{
-					"name": "DerivedColumn1",
-					"script": "SrcUnCrime derive(FileName = ERROR_FUNCTION('')) ~> DerivedColumn1"
+					"name": "sink1",
+					"script": "SrcUnCrime sink(input(\n\t\tFileName as string,\n\t\tRegion as string,\n\t\tSubRegion as string,\n\t\tCountry as string,\n\t\tCount as string,\n\t\tRate as string,\n\t\tYear as string,\n\t\tsysETLrunId as integer,\n\t\tsysCreatedAt as timestamp,\n\t\tsysChangedAt as timestamp,\n\t\tsysCreatedBy as integer,\n\t\tsysChangedBy as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tmapColumn(\n\t\tFileName,\n\t\tRegion,\n\t\tSubRegion = {Sub Region},\n\t\tCountry,\n\t\tCount,\n\t\tRate,\n\t\tYear\n\t)) ~> sink1"
 				}
 			]
 		}
