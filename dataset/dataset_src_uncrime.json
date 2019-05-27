@@ -5,11 +5,6 @@
 			"referenceName": "crimestatstacalinkedservice",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"FilePath": {
-				"type": "string"
-			}
-		},
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
